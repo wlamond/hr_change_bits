@@ -26,6 +26,10 @@ import fileinput, sys
 
 class Runtime:
     
+    """ The Runtime class maintains the state of the three binary strings
+    in the problem. It exploits the arbitrary precision integer type of 
+    Python to make this problem really straight-forward. """
+
     def __init__(self, a_val, b_val, c_val):
         self.a_val = a_val
         self.b_val = b_val
@@ -33,12 +37,15 @@ class Runtime:
         self.getReady = False # to avoid recomputing c_val
         
     def get(self, i):
+        """ performs the get operation, as defined on the challenge page. """
         if(not self.getReady):
             self.c_val = self.a_val + self.b_val
         self.getReady = True        
         return (self.c_val >> i) & 1 
         
     def set_a(self, i, val):
+        """ performs the set operation on the a_val, as defined on the 
+        challenge page."""
         self.getReady = False
         if(val == 1):
             self.a_val |= (1 << i)
@@ -46,6 +53,8 @@ class Runtime:
             self.a_val &= ~(1 << i)
         
     def set_b(self, i, val):
+        """ This performs the set operation on the b_val, as definied 
+        on the challenge page."""
         self.getReady = False
         if(val == 1):
             self.b_val |= (1 << i)
@@ -54,13 +63,14 @@ class Runtime:
     
 
 def get(cmd, rt):
-    
+    """ a wrapper function for calling the Runtime's get method. """
     bit_val = rt.get(int(cmd[1]))
     sys.stdout.write(str(bit_val))
     
 
     
 def set(cmd, rt):
+    """ a wrapper function for calling the Runtime's set_(a|b) method. """
     pos = int(cmd[1])
     val = int(cmd[2])
     if(cmd[0] == "set_a"):
@@ -71,6 +81,8 @@ def set(cmd, rt):
 
 
 def process_command(cmd, rt):
+    """ The wrapper for deciding whether a command is a get or a set, which 
+    then calls the respective wrapper function. """
     command = cmd.split(' ')
     operation = command[0]
     opcode = operation.split("_")
@@ -83,9 +95,12 @@ def process_command(cmd, rt):
 
 
 def main():
+    """ This reads the first line (doesn't really need to use it, just needs 
+    to get it out of the way), then gets the pair of binary strings, initializes
+    them as ints, and then processes the commands one by one. The state of the 
+    two ints is maintained by the Runtime class. """
 
     firstline = raw_input()    
-    bitcount_numcmds = firstline.split(" ")
     a_val = int(raw_input(), base=2)
     b_val = int(raw_input(), base=2)
     c_val = 0
